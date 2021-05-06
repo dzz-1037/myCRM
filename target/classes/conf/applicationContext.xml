@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+<!--spring配置文件声明，service , dao ,工具类等对象-->
+
+    <!--声明数据源，连接数据库-->
+    <context:property-placeholder location="classpath:conf/jdbc.properties"></context:property-placeholder>
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
+          init-method="init" destroy-method="close">
+        <property name="url" value="${jdbc.url}"></property>
+        <property name="username" value="${jdbc.username}"></property>
+        <property name="password" value="${jdbc.password}"></property>
+    </bean>
+
+    <!--声明sqlSessionFactoryBean创建sqlSessionFactory-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"></property>
+        <property name="configLocation" value="classpath:conf/mybaties.xml"></property>
+    </bean>
+
+    <!--声明mybatis的扫描器，创建dao对象-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+        <property name="basePackage" value="cn.hust.settings.dao"></property>
+    </bean>
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+        <property name="basePackage" value="cn.hust.workbench.dao"></property>
+    </bean>
+
+    <!--声明service注解 @service所在的包名位置-->
+    <context:component-scan base-package="cn.hust.settings.service"></context:component-scan>
+    <context:component-scan base-package="cn.hust.workbench.service"></context:component-scan>
+
+    <!---事务配置:注解的配置， aspectj的配置-->
+
+
+
+    <!-- Spring 配置文件中配置组件扫描器，用于在指定的基本包中扫描注解。-->
+<!--    <context:component-scan base-package="cn.hust"></context:component-scan>-->
+</beans>
